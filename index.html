@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เกมจับคู่คำถาม-คำตอบ</title>
+    <title>เกมจับคู่คำถามเคมี</title>
     <p>Code by Narawit</p>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* Base Styles */
         * {
             margin: 0;
             padding: 0;
@@ -26,8 +27,9 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            transition: background 1s ease-in-out;
         }
-
+        
         body::before {
             content: '';
             position: fixed;
@@ -41,11 +43,14 @@
                 radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
             pointer-events: none;
             z-index: -1;
+            transition: background 1s ease-in-out;
         }
 
+        /* General UI Components */
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            width: 100%;
         }
 
         .header {
@@ -54,6 +59,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 100%;
         }
 
         .title {
@@ -104,26 +110,105 @@
             text-align: center;
         }
 
-        .score-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .score-item:hover::before {
-            left: 100%;
-        }
-
         .score-item:hover {
             transform: translateY(-2px);
             box-shadow: 0 12px 40px rgba(0,0,0,0.15);
         }
 
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.2) 100%);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .instructions-box {
+            background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.08) 100%);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: left;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .instructions-content p {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .instructions-content strong {
+            color: white;
+        }
+
+        /* Difficulty and Category Selectors */
+        .category-selector, .difficulty-selector {
+            text-align: center;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .category-buttons, .difficulty-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .category-btn, .difficulty-btn {
+            background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.08) 100%);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 20px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(20px);
+            min-width: 180px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-btn { padding: 12px 20px; border-radius: 25px; min-width: unset; }
+
+        .category-btn.active, .difficulty-btn.active {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border-color: #4CAF50;
+            color: white;
+            box-shadow: 0 12px 40px rgba(76, 175, 80, 0.3);
+        }
+        
+        /* Game Board and Cards */
         .game-board {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -150,28 +235,12 @@
             border: 1px solid rgba(255,255,255,0.15);
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
             overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            border-color: rgba(255,255,255,0.3);
-        }
-
-        .card:hover::before {
-            opacity: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
         }
 
         .card.flipped {
@@ -188,308 +257,155 @@
             cursor: default;
             box-shadow: 0 12px 40px rgba(76, 175, 80, 0.4);
         }
-
-        .card.matched:hover {
-            transform: none;
-        }
-
-        .card.matched::after {
-            content: '✓';
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 1.5rem;
-            color: rgba(255,255,255,0.8);
-        }
-
+        
         .card-content {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 25px;
-            text-align: center;
+            padding: 15px;
             font-size: 1.1rem;
             line-height: 1.5;
             font-weight: 500;
-            z-index: 2;
         }
 
         .card-back {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-size: 4rem;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-            transition: all 0.3s ease;
+        }
+        
+        /* Devel Trigger Mode Styles */
+        .devel-mode {
+            background: #440000;
+            animation: screenShake 0.5s infinite;
+        }
+        
+        .devel-mode::before {
+            background: radial-gradient(circle at center, rgba(255, 0, 0, 0.1) 0%, transparent 70%);
+            animation: bloodMoonPulse 10s infinite;
         }
 
-        .card:not(.matched):hover .card-back {
-            font-size: 4.5rem;
-            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        .devel-mode .score-board, 
+        .devel-mode .instructions-box,
+        .devel-mode .category-selector,
+        .devel-mode .difficulty-selector {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 8px 32px rgba(255,0,0,0.2);
         }
 
-        .controls {
-            text-align: center;
-            margin-top: 20px;
+        .devel-mode .card,
+        .devel-mode .btn {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            color: #ff9999;
+            box-shadow: 0 8px 32px rgba(255,0,0,0.2);
         }
 
-        .btn {
-            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);
+        .devel-mode .card.flipped {
+            background: rgba(255, 0, 0, 0.2);
             color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 15px 30px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: 600;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(20px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
+            border-color: #ff4444;
+            box-shadow: 0 12px 40px rgba(255,0,0,0.5);
         }
 
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn:hover {
-            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.2) 100%);
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            border-color: rgba(255,255,255,0.5);
-        }
-
-        .instructions-box {
-            background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.08) 100%);
-            border-radius: 25px;
-            padding: 30px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255,255,255,0.2);
-            text-align: left;
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .instructions-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-        }
-
-        .instructions-content p {
-            margin-bottom: 8px;
-            line-height: 1.5;
-            color: rgba(255,255,255,0.9);
-        }
-
-        .instructions-content strong {
+        .devel-mode .card.matched {
+            background: #ff4444;
             color: white;
+            border-color: #ff0000;
+            box-shadow: 0 12px 40px rgba(255,0,0,0.6);
         }
 
-        .category-selector {
-            text-align: center;
-            margin-bottom: 25px;
+        .devel-mode .title,
+        .devel-mode .instructions-box h3 {
+            color: #ffcccc;
+            background: none;
+            -webkit-text-fill-color: #ffcccc;
+            text-shadow: 0 0 20px rgba(255,0,0,0.8);
         }
 
-        .category-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
+        .devel-mode .title::after {
+            background: linear-gradient(90deg, transparent, #ffcccc, transparent);
         }
 
-        .category-btn {
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 12px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
+        .devel-mode .win-message {
+            background: linear-gradient(135deg, #ff4444 0%, #aa0000 50%, #ff8888 100%);
+            animation: winMessageAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                         screenShake 0.2s infinite;
         }
 
-        .category-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: left 0.4s ease;
-        }
-
-        .category-btn:hover::before {
-            left: 100%;
-        }
-
-        .category-btn:hover {
-            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            border-color: rgba(255,255,255,0.3);
-        }
-
-        .category-btn.active {
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-            border-color: #4CAF50;
-            color: white;
-            box-shadow: 0 8px 30px rgba(76, 175, 80, 0.3);
-        }
-
-        .category-btn.active:hover {
-            background: linear-gradient(135deg, #45a049 0%, #4CAF50 100%);
-            box-shadow: 0 10px 35px rgba(76, 175, 80, 0.4);
-        }
-
-        .difficulty-selector {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .difficulty-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .difficulty-btn {
-            background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.08) 100%);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 20px 25px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(20px);
-            min-width: 180px;
-            text-align: center;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .difficulty-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .difficulty-btn:hover::before {
-            left: 100%;
-        }
-
-        .difficulty-btn:hover {
-            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.15) 100%);
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-            border-color: rgba(255,255,255,0.3);
-        }
-
-        .difficulty-btn.active {
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-            border-color: #4CAF50;
-            color: white;
-            box-shadow: 0 12px 40px rgba(76, 175, 80, 0.3);
-        }
-
-        .difficulty-btn.active:hover {
-            background: linear-gradient(135deg, #45a049 0%, #4CAF50 100%);
-            box-shadow: 0 15px 45px rgba(76, 175, 80, 0.4);
-        }
-
-        .difficulty-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .difficulty-desc {
-            font-size: 0.8rem;
-            opacity: 0.9;
-        }
-
-        .win-message {
+        /* Devil Popup Styles */
+        .devil-popup {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 50%, #66BB6A 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 30px;
-            text-align: center;
-            font-size: 1.5rem;
-            backdrop-filter: blur(25px);
-            display: none;
-            z-index: 1000;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.2);
-            max-width: 500px;
+            z-index: 2000;
             width: 90%;
-            animation: winMessageAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid #ff0000;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
+            color: #ff4444;
+            text-align: center;
+            display: none;
+            animation: devilPopupAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .devil-popup h2 {
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px #ff0000;
+            margin-bottom: 20px;
+        }
+
+        .devil-popup p {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            color: #ff9999;
+        }
+
+        .devil-popup .btn {
+            background: #ff0000;
+            border-color: #ff4444;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+        }
+
+        .devil-popup .btn:hover {
+            background: #cc0000;
+            box-shadow: 0 0 20px #ff4444;
+        }
+
+        /* Animations */
+        @keyframes screenShake {
+            0% { transform: translate(1px, 1px) }
+            10% { transform: translate(-1px, -1px) }
+            20% { transform: translate(-2px, 0px) }
+            30% { transform: translate(2px, 1px) }
+            40% { transform: translate(-1px, 2px) }
+            50% { transform: translate(-2px, -1px) }
+            60% { transform: translate(1px, -2px) }
+            70% { transform: translate(2px, 2px) }
+            80% { transform: translate(-1px, 1px) }
+            90% { transform: translate(1px, 2px) }
+            100% { transform: translate(1px, -1px) }
+        }
+
+        @keyframes bloodMoonPulse {
+            0% { transform: scale(1.0); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 0.9; }
+            100% { transform: scale(1.0); opacity: 0.8; }
+        }
+
+        @keyframes devilPopupAppear {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
         @keyframes winMessageAppear {
-            0% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0.8);
-            }
-            100% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
-        }
-
-        .win-message::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.1) 100%);
-            border-radius: 30px;
-            pointer-events: none;
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
         @keyframes fadeInOut {
@@ -510,39 +426,18 @@
             100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
         }
 
+        /* Responsive Styles */
         @media (max-width: 768px) {
             .game-board {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 15px;
             }
-            
-            .title {
-                font-size: 2rem;
-            }
-            
-            .score-board {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .difficulty-buttons, .category-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .difficulty-btn, .category-btn {
-                width: 200px;
-                text-align: center;
-            }
-            
-            .instructions-box {
-                padding: 15px;
-                text-align: center;
-            }
-            
-            .instructions-content p {
-                font-size: 0.9rem;
-            }
+            .title { font-size: 2rem; }
+            .score-board { flex-direction: column; gap: 10px; }
+            .difficulty-buttons, .category-buttons { flex-direction: column; align-items: center; }
+            .difficulty-btn, .category-btn { width: 200px; text-align: center; }
+            .instructions-box { padding: 15px; text-align: center; }
+            .instructions-content p { font-size: 0.9rem; }
         }
     </style>
 </head>
@@ -561,6 +456,17 @@
                 </div>
             </div>
 
+            <div class="category-selector">
+                <h3 style="margin-bottom: 15px; color: rgba(255,255,255,0.9);">เลือกหมวดหมู่:</h3>
+                <div class="category-buttons">
+                    <button class="category-btn" data-category="all">ทั้งหมด</button>
+                    <button class="category-btn" data-category="symbols">สัญลักษณ์ธาตุ</button>
+                    <button class="category-btn" data-category="atomic">โครงสร้างอะตอม</button>
+                    <button class="category-btn" data-category="acidbase">กรด-เบส</button>
+                    <button class="category-btn" data-category="quantity">ปริมาณสารสัมพันธ์</button>
+                    <button class="category-btn" data-category="organic">เคมีอินทรีย์</button>
+                </div>
+            </div>
             <div class="difficulty-selector">
                 <h3 style="margin-bottom: 15px; color: rgba(255,255,255,0.9);">เลือกระดับความยาก:</h3>
                 <div class="difficulty-buttons">
@@ -576,18 +482,6 @@
                         <div class="difficulty-title">🔴 ยาก</div>
                         <div class="difficulty-desc">เวลา 2 นาที + การ์ดหลอก + โล่ 2 ครั้ง</div>
                     </button>
-                </div>
-            </div>
-
-            <div class="category-selector">
-                <h3 style="margin-bottom: 15px; color: rgba(255,255,255,0.9);">เลือกหมวดหมู่:</h3>
-                <div class="category-buttons">
-                    <button class="category-btn" data-category="all">ทั้งหมด</button>
-                    <button class="category-btn" data-category="symbols">สัญลักษณ์และธาตุ</button>
-                    <button class="category-btn" data-category="atomic">โครงสร้างอะตอม</button>
-                    <button class="category-btn" data-category="acidbase">กรด-เบส</button>
-                    <button class="category-btn" data-category="quantity">ปริมาณสารสัมพันธ์</button>
-                    <button class="category-btn" data-category="organic">เคมีอินทรีย์</button>
                 </div>
             </div>
 
@@ -616,7 +510,7 @@
         </div>
 
         <div class="game-board" id="gameBoard">
-            </div>
+        </div>
 
         <div class="controls">
             <button class="btn" id="resetBtn">🔄 เริ่มเกมใหม่</button>
@@ -627,6 +521,13 @@
             <p>คุณจับคู่ได้ครบทุกคู่แล้ว!</p>
             <p id="finalStats"></p>
             <button class="btn" id="playAgainBtn" style="margin-top: 15px;">เล่นอีกครั้ง</button>
+        </div>
+
+        <div class="devil-popup" id="devilPopup">
+            <h2>💥 Devil Trigger!</h2>
+            <p>ความทรงจำของคุณถูกบิดเบือน! การ์ดที่เหลือถูกสับเปลี่ยนใหม่ทั้งหมด!</p>
+            <p>จำนวนครั้งที่ผิด: <span id="devilWrongAttempts">0</span> ครั้ง</p>
+            <button class="btn" id="continueDevilBtn">ยอมรับชะตากรรม</button>
         </div>
     </div>
 
@@ -694,6 +595,9 @@
         let shields = 0;
         let fakeCardHits = 0;
         let gameActive = false;
+        
+        let wrongAttempts = 0;
+        let failThreshold = 0;
 
         const gameBoard = document.getElementById('gameBoard');
         const scoreElement = document.getElementById('score');
@@ -705,6 +609,8 @@
         const shieldsCountElement = document.getElementById('shieldsCount');
         const winMessage = document.getElementById('winMessage');
         const finalStats = document.getElementById('finalStats');
+        const devilPopup = document.getElementById('devilPopup');
+        const devilWrongAttempts = document.getElementById('devilWrongAttempts');
 
         function selectDifficulty(difficulty) {
             currentDifficulty = difficulty;
@@ -722,7 +628,6 @@
             document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`.category-btn[data-category="${category}"]`).classList.add('active');
             
-            // Re-fetch question pairs based on the new category
             if (category === 'all') {
                 questionPairs = Object.values(allQuestionPairs).flat();
             } else {
@@ -735,36 +640,85 @@
             }
         }
 
+        // ===== NEW & MODIFIED FUNCTIONS =====
+        function showDevilPopup() {
+            gameActive = false; // Pause the game
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            
+            // 1. Activate visual effects
+            document.body.classList.add('devel-mode');
+            devilWrongAttempts.textContent = wrongAttempts;
+            
+            // 2. Shuffle remaining cards logic
+            const matched_cards = cards.filter(card => card.isMatched);
+            const unmatched_cards = cards.filter(card => !card.isMatched);
+            
+            // Flip back any temporarily flipped cards before shuffling
+            unmatched_cards.forEach(card => card.isFlipped = false);
+            flippedCards = [];
+
+            shuffleArray(unmatched_cards);
+            
+            cards = [...matched_cards, ...unmatched_cards];
+            
+            // 3. Show the popup
+            devilPopup.style.display = 'block';
+            
+            // 4. Re-render the newly shuffled board in the background
+            renderCards(); 
+        }
+
+        function continueFromDevilMode() {
+            devilPopup.style.display = 'none';
+            gameActive = true; // Resume the game
+            // Restart timer if it was running
+            if (startTime) {
+                // Adjust start time to account for the pause
+                const pausedDuration = Date.now() - (startTime + (gameTimeLimit ? (gameTimeLimit - (parseInt(timerElement.textContent.split(':')[0])*60 + parseInt(timerElement.textContent.split(':')[1])))*1000 : 0));
+                startTime += pausedDuration;
+                startTimer();
+            }
+        }
+        
         function initGame() {
             gameActive = false;
             if (timerInterval) {
                 clearInterval(timerInterval);
+                timerInterval = null;
             }
+            
+            document.body.classList.remove('devel-mode');
+            devilPopup.style.display = 'none';
+            winMessage.style.display = 'none';
 
-            // Set game parameters based on difficulty
+            wrongAttempts = 0;
             switch(currentDifficulty) {
                 case 'easy':
                     gameTimeLimit = null;
                     shields = 0;
+                    failThreshold = 10;
                     break;
                 case 'medium':
                     gameTimeLimit = 180;
                     shields = 0;
+                    failThreshold = 7;
                     break;
                 case 'hard':
                     gameTimeLimit = 120;
                     shields = 2;
+                    failThreshold = 5; // <-- This is the trigger
                     break;
             }
 
-            // Create card pairs
             cards = [];
             questionPairs.forEach((pair, index) => {
-                cards.push({ id: `q${index}`, content: pair.question, type: 'question', pairId: index, isFake: false });
-                cards.push({ id: `a${index}`, content: pair.answer, type: 'answer', pairId: index, isFake: false });
+                cards.push({ id: `q${index}`, content: pair.question, type: 'question', pairId: index, isFake: false, isFlipped: false, isMatched: false });
+                cards.push({ id: `a${index}`, content: pair.answer, type: 'answer', pairId: index, isFake: false, isFlipped: false, isMatched: false });
             });
 
-            // Add fake cards for hard mode
             if (currentDifficulty === 'hard') {
                 const numFakeCards = Math.min(4, Math.floor(questionPairs.length * 0.4));
                 const selectedFakes = fakeCards.slice(0, numFakeCards);
@@ -775,14 +729,15 @@
                         content: fake.content, 
                         type: fake.type, 
                         pairId: -1, 
-                        isFake: true 
+                        isFake: true,
+                        isFlipped: false,
+                        isMatched: false
                     });
                 });
             }
 
             shuffleArray(cards);
             
-            // Reset game state
             flippedCards = [];
             matchedPairs = 0;
             score = 0;
@@ -790,7 +745,6 @@
             startTime = null;
             streak = 0;
             fakeCardHits = 0;
-            winMessage.style.display = 'none';
 
             updateDisplay();
             renderCards();
@@ -808,7 +762,8 @@
             cards.forEach(card => {
                 const cardElement = document.createElement('div');
                 cardElement.className = 'card';
-                
+                cardElement.dataset.cardId = card.id;
+
                 if (card.isMatched) {
                     cardElement.classList.add('matched', 'flipped');
                 } else if (card.isFlipped) {
@@ -819,19 +774,24 @@
                     }
                 }
 
-                cardElement.innerHTML = `
-                    ${card.isFlipped || card.isMatched ? 
-                        `<div class="card-content">${card.content}${card.isFake && card.isFlipped ? ' ❌' : ''}</div>` : 
-                        `<div class="card-back">${card.type === 'question' ? '🧪' : '⚗️'}</div>`
-                    }
-                `;
-                cardElement.dataset.cardId = card.id;
+                if (card.isFlipped || card.isMatched) {
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'card-content';
+                    contentDiv.innerHTML = `${card.content}${card.isFake && card.isFlipped ? ' ❌' : ''}`;
+                    cardElement.appendChild(contentDiv);
+                } else {
+                    const backDiv = document.createElement('div');
+                    backDiv.className = 'card-back';
+                    backDiv.textContent = card.type === 'question' ? '🧪' : '⚗️';
+                    cardElement.appendChild(backDiv);
+                }
                 gameBoard.appendChild(cardElement);
             });
         }
 
         function flipCard(cardId) {
             if (!gameActive) {
+                if (devilPopup.style.display === 'block') return; // Prevent flipping while popup is shown
                 gameActive = true;
                 startTime = Date.now();
                 startTimer();
@@ -846,7 +806,6 @@
             flippedCards.push(card);
             flips++;
             
-            updateDisplay();
             renderCards();
 
             if (card.isFake) {
@@ -864,8 +823,8 @@
                     }
                     
                     streak = 0;
-                    updateDisplay();
                     renderCards();
+                    updateDisplay();
                 }, 1500);
             } else if (flippedCards.length === 2) {
                 setTimeout(checkMatch, 1000);
@@ -874,10 +833,15 @@
 
         function checkMatch() {
             const [card1, card2] = flippedCards;
+            
             const isDifferentTypes = card1.type !== card2.type;
             const isCorrectPair = isDifferentTypes && card1.pairId === card2.pairId;
-
-            if (isCorrectPair) {
+            const isAnyFake = card1.isFake || card2.isFake;
+            
+            if (isAnyFake) {
+                card1.isFlipped = false;
+                card2.isFlipped = false;
+            } else if (isCorrectPair) {
                 card1.isMatched = true;
                 card2.isMatched = true;
                 matchedPairs++;
@@ -896,6 +860,12 @@
                 card1.isFlipped = false;
                 card2.isFlipped = false;
                 streak = 0;
+                
+                wrongAttempts++;
+                if (wrongAttempts >= failThreshold) {
+                    showDevilPopup();
+                    return;
+                }
             }
             
             flippedCards = [];
@@ -917,6 +887,7 @@
         }
 
         function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 const elapsed = Math.floor((Date.now() - startTime) / 1000);
                 
@@ -1021,15 +992,17 @@
 
             document.getElementById('resetBtn').addEventListener('click', initGame);
             document.getElementById('playAgainBtn').addEventListener('click', initGame);
+            
+            // ===== MODIFIED BUTTON EVENT =====
+            // This replaces the old 'exitDevilBtn' logic
+            document.getElementById('continueDevilBtn').addEventListener('click', continueFromDevilMode);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             setupEventListeners();
-            // Select default options and initialize the game
             selectDifficulty('easy');
             selectCategory('all');
         });
     </script>
 </body>
-
 </html>
